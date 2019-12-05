@@ -47,7 +47,10 @@
             ></div>
           </el-carousel-item>
         </el-carousel>
-        <div class="el-carousel__step-btns">
+        <div
+          v-if="curAppImgArr.length > 1"
+          class="el-carousel__step-btns"
+        >
           <el-button
             class="el-carousel__step-btn el-carousel__prev"
             type="text"
