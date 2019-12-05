@@ -3,10 +3,7 @@
     <template v-if="!item.children">
       <el-menu-item :index="item.index">
         <template slot="title">
-          <div
-            class="sidebar-item-title--wrapper"
-            :style="getBgPosStyleByIndex(item.index)"
-          >
+          <div class="sidebar-item-title--wrapper">
             <span>{{ getTitle(item) }}</span>
           </div>
         </template>
@@ -51,11 +48,6 @@ export default {
   methods: {
     getTitle({index, noOrderNumber, name}) {
       return (noOrderNumber ? '' : `${Number(index) + 1}、 `) + name
-    },
-    getBgPosStyleByIndex(curIndex) {
-      // eslint-disable-next-line no-console
-      console.log(curIndex)
-      return {}
     }
   }
 }

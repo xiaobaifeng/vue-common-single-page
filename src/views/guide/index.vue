@@ -23,8 +23,9 @@
       v-model="activeIndex"
       :list="navList"
       class="guide__list guide__col"
-      :key="navList.join(',')"
     />
+    <!-- 
+      :key="navList.join(',')" -->
     <div class="guide__detail guide__col">
       <div
         class="guide__detail__img"
@@ -54,7 +55,7 @@
           <el-button
             class="el-carousel__step-btn el-carousel__prev"
             type="text"
-            @click="$refs['elCarousel'].prev()"
+            @click="handlePrev"
           >
             上一步
             <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-top"></span>
@@ -65,7 +66,7 @@
           <el-button
             class="el-carousel__step-btn el-carousel__next"
             type="text"
-            @click="$refs['elCarousel'].next()"
+            @click="handleNext"
           >
             下一步
             <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-top"></span>
@@ -82,16 +83,16 @@
       </div>
       <div class="guide__detail__text">
         <div class="guide__detail__item guide__detail__describe">
-          <div class="guide__detail__item__title">{{ activeItem.name }}</div>
-          <div class="guide__detail__item__content">{{ activeItem.describe }}</div>
+          <div class="guide__detail__item__title">功能简介</div>
+          <div class="guide__detail__item__content">{{ functionIntroduction }}</div>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-bottom"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-bottom"></span>
         </div>
         <div class="guide__detail__item guide__detail__fun-intro">
-          <div class="guide__detail__item__title">功能简介</div>
-          <div class="guide__detail__item__content">{{ activeItem.functionIntroduction }}</div>
+          <div class="guide__detail__item__title">操作步骤</div>
+          <div class="guide__detail__item__content">{{ describe }}</div>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-bottom"></span>
@@ -109,25 +110,38 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import { getBgImageStyle } from '@/utils'
-import { isString, isArray } from "@/utils/jsTypeUtil"
 
 export default {
   components: {
     Sidebar
   },
   computed: {
+    hasSteps () {
+      return !!this.activeItem.steps
+    },
     curAppImgArr() {
-      return isString(this.activeItem.appImgs) ? [this.activeItem.appImgs]
-        : isArray(this.activeItem.appImgs) ? this.activeItem.appImgs
+      return this.activeItem.appImg ? [this.activeItem.appImg]
+        : this.hasSteps ? this.activeItem.steps.map(item => item.appImg)
         : []
+    },
+    functionIntroduction() {
+      return this.hasSteps
+        ? this.activeItem.steps[this.elCarouselActiveIndex].functionIntroduction
+        : this.activeItem.functionIntroduction
+    },
+    describe() {
+      return this.hasSteps
+        ? this.activeItem.steps[this.elCarouselActiveIndex].describe
+        : this.activeItem.describe
     }
   },
   data() {
     return {
-      activeIndex: '',
-      activeItem: {},
       navList: [],
-      guideDetailImgHeight: 0
+      guideDetailImgHeight: 0,
+      activeIndex: '',
+      elCarouselActiveIndex: 0,
+      activeItem: {}
     }
   },
   watch: {
@@ -138,15 +152,21 @@ export default {
         if (posArr.length === 1) {
           this.activeItem = this.navList[posArr[0]]
         }
-        if (posArr.length === 2) {
-          this.activeItem = this.navList[posArr[0]].children[posArr[1]]
-        }
+        this.activeItem = posArr.slice(1).reduce((acc, item) => acc.children[item], this.navList[posArr[0]])
       },
       immediate: true
     }
   },
   methods: {
-    getBgImageStyle
+    getBgImageStyle,
+    handlePrev() {
+      this.$refs['elCarousel'].prev()
+      this.elCarouselActiveIndex = this.$refs['elCarousel'].activeIndex
+    },
+    handleNext() {
+      this.$refs['elCarousel'].next()
+      this.elCarouselActiveIndex = this.$refs['elCarousel'].activeIndex
+    }
   },
   created() {
     // fetch(process.env.BASE_URL + 'app-nav-config.json').then(response => {

@@ -1,9 +1,14 @@
 /**
  * {
  *    name: String,
- *    appImgs: String | [String]
+ *    appImg: String
  *    describe: String
- *    functionIntroduction: String
+ *    functionIntroduction: String,
+ *    steps: [{
+ *      appImg: String
+ *      describe: String
+ *      functionIntroduction: String,
+ *    }]
  * }
  */
 var appNav = [
@@ -11,39 +16,72 @@ var appNav = [
     "name": "登录、注册",
     "children": [
       {
-        "name": "登录",
-        "appImgs": "app-back-icon--hover",
+        "name": "登录-no-steps",
+        "appImg": "app-back-icon--hover.png",
         "describe": "这是登录页面",
         "functionIntroduction": "记住密码..."
+      },
+      {
+        "name": "登录-has-steps",
+        "steps": [
+          {
+            "appImg": "erweima-horn.png",
+            "describe": "describe: steps1",
+            "functionIntroduction": "functionIntroduction: steps1"
+          },
+          {
+            "appImg": "guide__horn.png",
+            "describe": "describe: steps2",
+            "functionIntroduction": "functionIntroduction: steps2"
+          }
+        ]
       },
       {
         "name": "注册",
         "children": [
           {
-            "name": "注册1",
-            "appImgs": "注册1-img",
+            "name": "注册-no-steps",
+            "appImg": "app-back-icon.png",
             "describe": "注册1",
             "functionIntroduction": "记住密码..."
           },
           {
-            "name": "注册2",
-            "appImgs": "注册2-img",
-            "describe": "注册2",
-            "functionIntroduction": "注册成功后..."
+            "name": "注册-has-steps",
+            "steps": [
+              {
+                "appImg": "erweima-horn.png",
+                "describe": "describe: steps1",
+                "functionIntroduction": "functionIntroduction: steps1"
+              },
+              {
+                "appImg": "guide__horn.png",
+                "describe": "describe: steps2",
+                "functionIntroduction": "functionIntroduction: steps2"
+              }
+            ]
           }
         ]
       }
     ]
   },
   {
-    "name": "app-back-icon",
-    "appImgs": ["app-back-icon.png", "app-back-icon--hover.png"],
-    "describe": "这是登录页面",
-    "functionIntroduction": "任务功能1..."
+    "name": "app-back",
+    "steps": [
+      {
+        "appImg": "app-back-icon.png",
+        "describe": "describe: steps1",
+        "functionIntroduction": "functionIntroduction: steps1"
+      },
+      {
+        "appImg": "app-back-icon--hover.png",
+        "describe": "describe: steps2",
+        "functionIntroduction": "functionIntroduction: steps2"
+      }
+    ]
   },
   {
     "name": "任务功能2",
-    "appImgs": "app-back-icon.png",
+    "appImg": "guide__horn.png",
     "describe": "这是登录页面",
     "functionIntroduction": "任务功能2..."
   }
