@@ -10,6 +10,8 @@
         :collapse-transition="false"
         mode="vertical"
         @select="handleSelect"
+        @open="handleOpen"
+        @close="handleClose"
       >
         <sidebar-item
           v-for="(item, index) in list"
@@ -52,6 +54,11 @@ export default {
   methods: {
     handleSelect(index) {
       this.$emit('change', index)
+    },
+    handleOpen(index) {
+      this.$refs['elMenu'].updateActiveIndex(index)
+    },
+    handleClose() {
     }
   }
 }
