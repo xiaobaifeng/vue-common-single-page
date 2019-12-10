@@ -24,11 +24,57 @@
       :list="navList"
       class="guide__list guide__col"
     />
+    <!-- 
+      :key="navList.join(',')" -->
     <div class="guide__detail guide__col">
       <div
         class="guide__detail__img"
-        :style="activeItem.appImg ? getBgImageStyle('app-imgs/' + activeItem.appImg) : {}"
+        id="guide__detail__img"
       >
+        <el-carousel
+          v-if="curAppImgArr.length > 0"
+          trigger="click"
+          :autoplay="false"
+          :height="`${guideDetailImgHeight}px`"
+          ref="elCarousel"
+        >
+          <el-carousel-item
+            v-for="url in curAppImgArr"
+            :key="url"
+          >
+            <div
+              class="guide__detail__img-perview"
+              :style="getBgImageStyle('app-imgs/' + url)"
+            ></div>
+          </el-carousel-item>
+        </el-carousel>
+        <div
+          v-if="curAppImgArr.length > 1"
+          class="el-carousel__step-btns"
+        >
+          <el-button
+            class="el-carousel__step-btn el-carousel__prev"
+            type="text"
+            @click="handlePrev"
+          >
+            上一步
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-top"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--right-top"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-bottom"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--right-bottom"></span>
+          </el-button>
+          <el-button
+            class="el-carousel__step-btn el-carousel__next"
+            type="text"
+            @click="handleNext"
+          >
+            下一步
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-top"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--right-top"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--left-bottom"></span>
+            <span class="el-carousel__step-btn__horn el-carousel__step-btn__horn--right-bottom"></span>
+          </el-button>
+        </div>
         <span class="guide__detail__img__horn guide__detail__img__horn--left-top"></span>
         <span class="guide__detail__img__horn guide__detail__img__horn--right-top"></span>
         <span class="guide__detail__img__horn guide__detail__img__horn--left-bottom"></span>
@@ -37,16 +83,16 @@
       </div>
       <div class="guide__detail__text">
         <div class="guide__detail__item guide__detail__describe">
-          <div class="guide__detail__item__title">{{ activeItem.name }}</div>
-          <div class="guide__detail__item__content">{{ activeItem.describe }}</div>
+          <div class="guide__detail__item__title">功能简介</div>
+          <div class="guide__detail__item__content">{{ functionIntroduction }}</div>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-bottom"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-bottom"></span>
         </div>
         <div class="guide__detail__item guide__detail__fun-intro">
-          <div class="guide__detail__item__title">功能简介</div>
-          <div class="guide__detail__item__content">{{ activeItem.functionIntroduction }}</div>
+          <div class="guide__detail__item__title">操作步骤</div>
+          <div class="guide__detail__item__content">{{ describe }}</div>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--right-top"></span>
           <span class="guide__detail__text__horn guide__detail__text__horn--left-bottom"></span>
@@ -70,12 +116,32 @@ export default {
     Sidebar
   },
   computed: {
+    hasSteps () {
+      return !!this.activeItem.steps
+    },
+    curAppImgArr() {
+      return this.activeItem.appImg ? [this.activeItem.appImg]
+        : this.hasSteps ? this.activeItem.steps.map(item => item.appImg)
+        : []
+    },
+    functionIntroduction() {
+      return this.hasSteps
+        ? this.activeItem.steps[this.elCarouselActiveIndex].functionIntroduction
+        : this.activeItem.functionIntroduction
+    },
+    describe() {
+      return this.hasSteps
+        ? this.activeItem.steps[this.elCarouselActiveIndex].describe
+        : this.activeItem.describe
+    }
   },
   data() {
     return {
+      navList: [],
+      guideDetailImgHeight: 0,
       activeIndex: '',
-      activeItem: {},
-      navList: []
+      elCarouselActiveIndex: 0,
+      activeItem: {}
     }
   },
   watch: {
@@ -86,15 +152,22 @@ export default {
         if (posArr.length === 1) {
           this.activeItem = this.navList[posArr[0]]
         }
-        if (posArr.length === 2) {
-          this.activeItem = this.navList[posArr[0]].children[posArr[1]]
-        }
+        this.activeItem = posArr.slice(1).reduce((acc, item) => acc.children[item], this.navList[posArr[0]])
+        this.elCarouselActiveIndex = 0
       },
       immediate: true
     }
   },
   methods: {
-    getBgImageStyle
+    getBgImageStyle,
+    handlePrev() {
+      this.$refs['elCarousel'].prev()
+      this.elCarouselActiveIndex = this.$refs['elCarousel'].activeIndex
+    },
+    handleNext() {
+      this.$refs['elCarousel'].next()
+      this.elCarouselActiveIndex = this.$refs['elCarousel'].activeIndex
+    }
   },
   created() {
     // fetch(process.env.BASE_URL + 'app-nav-config.json').then(response => {
@@ -107,10 +180,17 @@ export default {
     //     console.log('Error Reading data ' + err);
     //   })
     this.navList = window.appNav
+  },
+  mounted() {
+    this.guideDetailImgHeight = document.querySelector("#guide__detail__img").clientHeight
   }
 }
 </script>
-
+<style>
+#app .el-carousel__indicators {
+  display: none;
+}
+</style>
 <style scoped>
 .guide {
   position: relative;
@@ -167,9 +247,12 @@ export default {
   position: relative;
   width: 394px;
   height: 100%;
+  border: 1px solid #77deff;
+}
+.guide__detail__img-perview {
+  height: 100%;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  border: 1px solid #77deff;
 }
 .guide__detail__img__horn {
   position: absolute;
@@ -199,17 +282,57 @@ export default {
   bottom: -13px;
   transform: rotate(180deg);
 }
+.el-carousel__step-btns {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  transform: translate(-50%, 100%);
+}
+.el-carousel__step-btn {
+  position: relative;
+}
+.el-carousel__step-btn__horn {
+  position: absolute;
+  z-index: 10;
+  width: 45px;
+  height: 45px;
+  background-image: url("../../assets/el-carousel__btn-horn.png");
+  background-repeat: no-repeat;
+  box-sizing: content-box;
+}
+.el-carousel__step-btn__horn--left-top {
+  left: -30px;
+  top: -14px;
+}
+.el-carousel__step-btn__horn--right-top {
+  right: -30px;
+  top: -14px;
+  transform: rotate(90deg);
+}
+.el-carousel__step-btn__horn--left-bottom {
+  left: -30px;
+  bottom: -14px;
+  transform: rotate(-90deg);
+}
+.el-carousel__step-btn__horn--right-bottom {
+  right: -30px;
+  bottom: -14px;
+  transform: rotate(180deg);
+}
 .guide__detail__name {
   position: absolute;
   z-index: 10;
   left: 50%;
-  bottom: -14px;
+  top: -14px;
   height: 18px;
   line-height: 18px;
   font-size: 18px;
   font-weight: bold;
   color: #4df1f9;
-  transform: translate(-50%, 100%);
+  transform: translate(-50%, -100%);
 }
 .guide__detail__text {
   width: 390px;

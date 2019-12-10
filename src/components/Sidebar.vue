@@ -64,10 +64,6 @@ export default {
 #app .sidebar-container .scrollbar-wrapper {
   overflow-x: hidden !important;
 }
-#app .sidebar-container .is-active > .el-submenu__title {
-  color: #fff !important;
-  background-image: url("../assets/nav-level1--select.png");
-}
 #app .el-scrollbar__wrap {
   margin-right: -19px !important;
   margin-bottom: -19px !important;
@@ -85,26 +81,6 @@ export default {
 }
 .scrollbar-wrapper {
   font-weight: bold;
-}
-.el-menu-item,
-.el-submenu__title {
-  margin-left: 40px;
-  text-indent: 20px;
-  background-repeat: no-repeat;
-  background-position: left center;
-  background-image: url("../assets/nav-level1.png");
-}
-.el-menu-item.is-active {
-  background-image: url("../assets/nav-level1--select.png");
-}
-.el-menu-item.is-active {
-  background-image: url("../assets/nav-level1--select.png");
-}
-.el-menu--inline .el-menu-item {
-  margin-left: 80px;
-}
-.el-menu--inline .el-menu-item.is-active {
-  background-image: url("../assets/nav-level2--select.png");
 }
 .el-menu-item.is-active {
   text-shadow: 1px 1px 70px #3a8ee6;
