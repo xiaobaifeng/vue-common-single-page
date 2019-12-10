@@ -153,6 +153,7 @@ export default {
           this.activeItem = this.navList[posArr[0]]
         }
         this.activeItem = posArr.slice(1).reduce((acc, item) => acc.children[item], this.navList[posArr[0]])
+        this.elCarouselActiveIndex = 0
       },
       immediate: true
     }
